@@ -1,0 +1,22 @@
+Controls:<><><><><><><><><><><><><><>
+
+
+Click Anywhere = Produces a blupi of the selected or random type.
+
+Mouse Hover Over non-flying Blupi activates a jump action.
+
+Spacebar = Clear Screen of Blupis
+
+Ctrl+Alt+Esc = Quit Blupi Bouncers
+
+Number 1 = All clicks produce Flying Blupis for 50 seconds after activation.
+Number 2 = All clicks produce Jeep-Driving Blupis for 50 seconds after activation.
+Number 3 = All clicks produce Tank-Driving Blupis for 50 seconds after activation.
+Number 4 = All clicks produce Bouncing Blupis for 50 seconds after activation.
+Number 0 = All clicks produce Random Blupi types.(default)
+
+Number 9 = Generates 50 Blupis of the selected type in random positions.
+
+
+
+
