@@ -1,0 +1,33 @@
+# Project: Blupi Bouncers
+# Makefile created by Embarcadero Dev-C++ 6.3
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+RES      = getsystemhandle_private.res
+OBJ      = main.o $(RES)
+LINKOBJ  = main.o $(RES)
+LIBS     = -L"C:/mingw32/lib" -L"C:/mingw32/i686-w64-mingw32/lib" -L"C:/SFML-2.6.1/lib" -static-libgcc -lsfml-window -lsfml-system -lsfml-audio -lsfml-graphics -lsfml-network -lopengl32 -mwindows -m32
+INCS     = -I"C:/mingw32/include" -I"C:/mingw32/i686-w64-mingw32/include"
+CXXINCS  = -I"C:/mingw32/include" -I"C:/mingw32/i686-w64-mingw32/include" -I"C:/SFML-2.6.1/include"
+BIN      = "Blupi Bouncers.exe"
+CXXFLAGS = $(CXXINCS) -m32 -std=c++11
+CFLAGS   = $(INCS) -m32 -std=c++11
+DEL      = C:\Program Files (x86)\Embarcadero\Dev-Cpp\devcpp.exe INTERNAL_DEL
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${DEL} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+getsystemhandle_private.res: getsystemhandle_private.rc 
+	$(WINDRES) -i getsystemhandle_private.rc -F pe-i386 --input-format=rc -o getsystemhandle_private.res -O coff 
+
