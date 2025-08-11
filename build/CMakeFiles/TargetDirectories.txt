@@ -1,0 +1,3 @@
+E:/Users/Humor/Documents/Devc++ projects/Blupi Bouncers source/build/CMakeFiles/Blupi_Bouncers.dir
+E:/Users/Humor/Documents/Devc++ projects/Blupi Bouncers source/build/CMakeFiles/edit_cache.dir
+E:/Users/Humor/Documents/Devc++ projects/Blupi Bouncers source/build/CMakeFiles/rebuild_cache.dir

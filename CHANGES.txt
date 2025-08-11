@@ -1,0 +1,19 @@
+GOALS<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|
+
+
+1: Fix windows version detection:<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+Will cause Blupi Bouncers to use UpdateLayeredWindow() function(slower) for operating systems below windows 8. 
+This will allow windows 7 to run this program with a transparent background.
+
+2: Update sizes to account for mid-use changing of the global DPI:<><><><><><><><><><><><><><><><><><><><><><><><>
+
+
+UPDATES<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|
+
+
+1: DPI detection was glitchy. Now fixed and code cleaned up.
+
+2: Transparent windows for supposedly as far back as windows 2000. (Used UpdateLayeredWindow() function)
+
+3: Overall, more cleanliness and orderliness of code.

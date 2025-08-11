@@ -1,0 +1,28 @@
+# Project: Blupi Bouncers
+# Makefile created by Embarcadero Dev-C++ 6.3
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+OBJ      = main.o
+LINKOBJ  = main.o
+LIBS     = -L"C:/mingw32/lib" -L"C:/mingw32/i686-w64-mingw32/lib" -L"C:/SFML-2.6.0/lib" -static-libgcc -static-libstdc++  -lsfml-graphics -lsfml-system -lsfml-window -lsfml-audio -lsfml-network -mwindows -lgdi32
+INCS     = -I"C:/mingw32/include" -I"C:/mingw32/i686-w64-mingw32/include" -I"C:/mingw32/lib/gcc/i686-w64-mingw32/13.1.0/include"
+CXXINCS  = -I"C:/mingw32/include" -I"C:/mingw32/i686-w64-mingw32/include" -I"C:/mingw32/lib/gcc/i686-w64-mingw32/13.1.0/include" -I"C:/SFML-2.6.0/include"
+BIN      = "Blupi Bouncers.exe"
+CXXFLAGS = $(CXXINCS) -std=c++17
+CFLAGS   = $(INCS) -std=c++17
+DEL      = C:\Program Files (x86)\Embarcadero\Dev-Cpp\devcpp.exe INTERNAL_DEL
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${DEL} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
