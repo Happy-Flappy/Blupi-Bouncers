@@ -1,12 +1,12 @@
 [Project]
 filename=Blupi Bouncers.dev
 name=Blupi Bouncers
-Type=0
+Type=1
 Ver=2
 ObjFiles=
 Includes=
 Libs=
-PrivateResource=
+PrivateResource=Blupi_Bouncers_private.rc
 ResourceIncludes=
 MakeIncludes=
 Compiler=
@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
-UnitCount=3
+UnitCount=5
 
 [VersionInfo]
 Major=1
@@ -60,8 +60,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit2]
-FileName=getSize.h
+[Unit3]
+FileName=usersettings.h
 CompileCpp=1
 Folder=
 Compile=1
@@ -70,7 +70,27 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit3]
+[Unit4]
+FileName=manifest.rc
+CompileCpp=1
+Folder=Resources
+Compile=1
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit5]
+FileName=colormode.h
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
+
+[Unit2]
 FileName=main.cpp
 CompileCpp=1
 Folder=

@@ -5,9 +5,9 @@
 
 
 #include <windows.h>
-#include <versionhelpers.h>
 #include <SFML/Graphics.hpp>
-
+#include <cstring>
+#include <thread>
 
 namespace ClearScreen
 {
@@ -19,15 +19,30 @@ namespace ClearScreen
 	int SCALE_WIDTH = 1920;
 	int SCALE_HEIGHT = 1080;
 	sf::RenderTexture renderTexture;
-	bool modern = true;
+	bool modern = false;
 	
-	void Init(int width,int height,sf::RenderWindow &window,int scaledX,int scaledY) 
+	void Init(bool isModern,int width,int height,sf::RenderWindow &window,int scaledX = 100000,int scaledY = 100000) 
 	{
+		
+		modern = isModern;
+		
 		//Set Sizes
 		FIXED_WIDTH = width;
 		FIXED_HEIGHT = height;
+		
+		
+    	sf::VideoMode desktop = sf::VideoMode::getDesktopMode();	
+	    
+		int screenWidth  = desktop.width;
+	    int screenHeight = desktop.height;		
+		
+		if(scaledX > screenWidth)
+			scaledX = screenWidth;
+		if(scaledY > screenHeight - 1)
+			scaledX = screenHeight - 1;
+		
 		SCALE_WIDTH = scaledX;
-		SCALE_HEIGHT = scaledY;
+		SCALE_HEIGHT = scaledY;//Scaled size always has to be smaller than screen. If larger it will force color without transparency.
 		
 		
 		
@@ -35,14 +50,7 @@ namespace ClearScreen
 		sf::WindowHandle handle = window.getSystemHandle();
 		
 		//Set as WS_EX_LAYERED
-		SetWindowLongPtrA(handle, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW);
-	
-		
-		if(IsWindows8OrGreater())
-			modern = true;
-		else
-			modern = false;
-		
+		SetWindowLongPtrA(handle, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT);
 		
 		if(modern)
 		{
@@ -51,13 +59,29 @@ namespace ClearScreen
 			return;
 		}
 		//else	
-		
-	    // Setup Environment for the less efficient but effective method that is supported by windows 2000 and up.
-	    hdcMem = CreateCompatibleDC(NULL);
-	    BITMAPINFO bmi = { {sizeof(BITMAPINFOHEADER), FIXED_WIDTH, -FIXED_HEIGHT, 1, 32, BI_RGB} };
-	    hbmp = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, &pvBits, NULL, 0);
-	    SelectObject(hdcMem, hbmp);
+				
+//	    // Setup Environment for the less efficient but effective method that is supported by windows 2000 and up.
+//	    hdcMem = CreateCompatibleDC(NULL);
+//	    BITMAPINFO bmi = { {sizeof(BITMAPINFOHEADER), FIXED_WIDTH, -FIXED_HEIGHT, 1, 32, BI_RGB} };
+//	    hbmp = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, &pvBits, NULL, 0);
+//	    SelectObject(hdcMem, hbmp);
 	    renderTexture.create(FIXED_WIDTH,FIXED_HEIGHT);
+
+        // Create DIB section with exact 32-bit ARGB format
+        BITMAPINFO bmi = {0};
+        bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        bmi.bmiHeader.biWidth = FIXED_WIDTH;
+        bmi.bmiHeader.biHeight = -FIXED_HEIGHT;  // Top-down
+        bmi.bmiHeader.biPlanes = 1;
+        bmi.bmiHeader.biBitCount = 32;
+        bmi.bmiHeader.biCompression = BI_RGB;
+        
+        hdcMem = CreateCompatibleDC(NULL);
+        hbmp = CreateDIBSection(hdcMem, &bmi, DIB_RGB_COLORS, &pvBits, NULL, 0);
+        SelectObject(hdcMem, hbmp);
+        
+        // Initialize bitmap with full transparency
+        std::memset(pvBits, 0, FIXED_WIDTH * FIXED_HEIGHT * 4);
 	    
 	}
 	
@@ -67,29 +91,36 @@ namespace ClearScreen
 	    
 	    if(modern)
 	    	return;
-	    	
+
+
+	    // Get image from render texture
 	    sf::Image img = renderTexture.getTexture().copyToImage();
-	    
-	    int width = img.getSize().x;
-	    int height = img.getSize().y;
-	    
-	    
 	    const sf::Uint8* src = img.getPixelsPtr();
-	    DWORD* dest = (DWORD*)pvBits;
+
+
+		//COLOR CONVERSION IGNORED TO PROVIDE MASSIVE PERFORMANCE IMPROVEMENT
+		// Copy pixel data directly to DIB section
+        std::memcpy(pvBits, src, FIXED_WIDTH * FIXED_HEIGHT * 4);
+	        
+
+
+
+        
+        // Update window position and size
+        RECT rect;
+        GetWindowRect(hwnd, &rect);
+        POINT ptDst = {rect.left, rect.top};
+        SIZE size = {FIXED_WIDTH, FIXED_HEIGHT};
+        POINT ptSrc = {0, 0};
+        
+        // Set up blend function for per-pixel alpha
+        BLENDFUNCTION blend = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+        
+        // Update the layered window
+        UpdateLayeredWindow(hwnd, NULL, &ptDst, &size, hdcMem, &ptSrc, 0, &blend, ULW_ALPHA);
+
+        
 	    
-	    // Process pixels
-	    for (int i = 0; i < FIXED_WIDTH * FIXED_HEIGHT; i++) {
-	        const sf::Uint8* p = src + i*4;
-	        dest[i] = (p[0] == 255 && p[1] == 0 && p[2] == 255)
-	            ? 0x00000000 
-	            : (0xFF000000 | (p[0]<<16) | (p[1]<<8) | p[2]);
-	    }
-	    
-	    // Update window 
-	    SIZE size = {LONG(SCALE_WIDTH), LONG(SCALE_HEIGHT)};
-	    POINT ptSrc = {0, 0};
-	    BLENDFUNCTION blend = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-	    UpdateLayeredWindow(hwnd, NULL, NULL, &size, hdcMem, &ptSrc, RGB(255,0,255), &blend, ULW_ALPHA|ULW_COLORKEY);
 	}
 	
 

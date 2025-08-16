@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly
+  xmlns="urn:schemas-microsoft-com:asm.v1"
+  manifestVersion="1.0">
+<assemblyIdentity
+    name="DevCpp.Apps.Blupi_Bouncers"
+    processorArchitecture="*"
+    version="1.0.0.0"
+    type="win32"/>
+<description>Blupi Bouncers</description>
+    <!-- Optional: DPI awareness -->
+    <application xmlns="urn:schemas-microsoft-com:asm.v3">
+        <windowsSettings>
+            <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2</dpiAwareness>
+        </windowsSettings>
+    </application>
+</assembly>

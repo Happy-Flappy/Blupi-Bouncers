@@ -84,12 +84,12 @@ clean: CMakeFiles/Blupi_Bouncers.dir/clean
 CMakeFiles/Blupi_Bouncers.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Blupi_Bouncers.dir\build.make CMakeFiles/Blupi_Bouncers.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Blupi_Bouncers.dir\build.make CMakeFiles/Blupi_Bouncers.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="E:\Users\Humor\Documents\Devc++ projects\Blupi Bouncers source\build\CMakeFiles" --progress-num=1,2 "Built target Blupi_Bouncers"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="E:\Users\Humor\Documents\Devc++ projects\Blupi Bouncers source\build\CMakeFiles" --progress-num=1,2,3 "Built target Blupi_Bouncers"
 .PHONY : CMakeFiles/Blupi_Bouncers.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Blupi_Bouncers.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "E:\Users\Humor\Documents\Devc++ projects\Blupi Bouncers source\build\CMakeFiles" 2
+	$(CMAKE_COMMAND) -E cmake_progress_start "E:\Users\Humor\Documents\Devc++ projects\Blupi Bouncers source\build\CMakeFiles" 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/Blupi_Bouncers.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "E:\Users\Humor\Documents\Devc++ projects\Blupi Bouncers source\build\CMakeFiles" 0
 .PHONY : CMakeFiles/Blupi_Bouncers.dir/rule
@@ -101,7 +101,7 @@ Blupi_Bouncers: CMakeFiles/Blupi_Bouncers.dir/rule
 # codegen rule for target.
 CMakeFiles/Blupi_Bouncers.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Blupi_Bouncers.dir\build.make CMakeFiles/Blupi_Bouncers.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="E:\Users\Humor\Documents\Devc++ projects\Blupi Bouncers source\build\CMakeFiles" --progress-num=1,2 "Finished codegen for target Blupi_Bouncers"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="E:\Users\Humor\Documents\Devc++ projects\Blupi Bouncers source\build\CMakeFiles" --progress-num=1,2,3 "Finished codegen for target Blupi_Bouncers"
 .PHONY : CMakeFiles/Blupi_Bouncers.dir/codegen
 
 # clean rule for target.

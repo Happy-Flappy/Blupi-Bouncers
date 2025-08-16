@@ -1,13 +1,8 @@
 GOALS<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|
 
+1:Fix bogus window size caused by non-legacy transparency method.
 
-1: Fix windows version detection:<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-Will cause Blupi Bouncers to use UpdateLayeredWindow() function(slower) for operating systems below windows 8. 
-This will allow windows 7 to run this program with a transparent background.
-
-2: Update sizes to account for mid-use changing of the global DPI:<><><><><><><><><><><><><><><><><><><><><><><><>
-
+2:Fix offset cursor position caused by DPI. 
 
 UPDATES<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|
 
@@ -17,3 +12,14 @@ UPDATES<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<
 2: Transparent windows for supposedly as far back as windows 2000. (Used UpdateLayeredWindow() function)
 
 3: Overall, more cleanliness and orderliness of code.
+
+4: Added user control "settings.txt" to change blupi's scale or switch transparency methods if first method fails. 
+	1 = Modern method
+	0 = Old method(more reliable but slower)
+5: Changed Exit Key Combo from Ctrl+Alt+Esc to simply Ctrl+Esc.
+ 
+6: Update sizes to account for mid-use changing of the global DPI:
+
+7: Optimized legacy transparency method by cutting out frame by frame color conversion from RGBA to BGRA. 
+
+8: Color conversion is now done once to graphics at program start. 

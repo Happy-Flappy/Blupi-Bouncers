@@ -159,6 +159,14 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Blupi_Bouncers.dir\build.make CMakeFiles/Blupi_Bouncers.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+manifest.obj: manifest.rc.obj
+.PHONY : manifest.obj
+
+# target to build an object file
+manifest.rc.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Blupi_Bouncers.dir\build.make CMakeFiles/Blupi_Bouncers.dir/manifest.rc.obj
+.PHONY : manifest.rc.obj
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -172,6 +180,7 @@ help:
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... manifest.obj
 .PHONY : help
 
 

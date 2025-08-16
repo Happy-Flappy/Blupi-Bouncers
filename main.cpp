@@ -6,9 +6,9 @@
 #include <string>
 #include <vector> 
 #include <iostream>
-#include "getSize.h"
 #include "clearscreen.h"
-
+#include "usersettings.h"
+#include "colormode.h"
 
 
 using namespace sf;
@@ -63,6 +63,38 @@ public:
     }
 
 
+
+	void updateImageType(sf::Texture &texture)
+	{
+		sf::Image image;
+		image = texture.copyToImage();
+		
+		for(int x=0;x<image.getSize().x;x++)
+		{
+			for(int y=0;y<image.getSize().y;y++)
+			{
+				image.setPixel(x,y,	COLORMODE::GET(image.getPixel(x,y)));
+			}
+		}
+		
+		texture.update(image);
+		
+		
+	}
+
+
+	
+
+
+
+	
+	void updateImages()
+	{
+		updateImageType(blupi);
+		updateImageType(element);
+	}
+
+
     Textures()
     {
         clearcolor("blupi000.bmp", Color::Blue, Color::Transparent, blupi);
@@ -83,10 +115,35 @@ public:
 
 
 
+float DPI = 1;
+
+
+
+float GetDPI()
+{
+    HDC hdc = GetDC(NULL);
+    if (!hdc) return 1.0f;
+    
+    // Get system DPI setting
+    int d = GetDeviceCaps(hdc, LOGPIXELSX);
+    ReleaseDC(NULL, hdc);
+    
+    // Calculate scaling factor (96 DPI = 100% scaling)
+    return static_cast<float>(d) / 96.0f;
+}
 
 
 
 
+
+
+sf::IntRect workarea;
+void getWorkArea()
+{
+	RECT area;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &area, 0); 
+	workarea = {area.left,area.top,area.right - area.left,area.bottom - area.top};
+}
 
 
 
@@ -121,6 +178,9 @@ public:
 
     Blupi()
     {
+    	
+    	scale = UserSettings::BlupiScale;
+    	
     	sprite.setScale(scale,scale);
         sprite.setTexture(textures.blupi);
         sprite.setTextureRect(IntRect(33, 285, 35, 49));
@@ -412,19 +472,19 @@ public:
             float rad = angle * (3.14 / 180);
 			
 			
-			if(sprite.getPosition().x< GetSize::Bounds::workarea.width/8)
+			if(sprite.getPosition().x< workarea.width/8)
 			{
 				
 				angle-=4;
 			}
-			if(sprite.getPosition().x>GetSize::Bounds::workarea.width - GetSize::Bounds::workarea.width/8)
+			if(sprite.getPosition().x>workarea.width - workarea.width/8)
 			{
 				angle++;
 			}
 			 
 			
 			
-            sprite.move((cos(rad) * (GetSize::Bounds::workarea.width/8))/40, (sin(rad) * (GetSize::Bounds::workarea.height/8))/40);
+            sprite.move((cos(rad) * (workarea.width/8))/40, (sin(rad) * (workarea.height/8))/40);
 
             velocity.x = 0;
             velocity.y = 0;
@@ -483,14 +543,14 @@ public:
 
         if (status == wave || status == jeep || status == tank || status == glued)
         {
-            if (sprite.getPosition().y + (sprite.getTextureRect().height / 2) < GetSize::Bounds::workarea.height)
+            if (sprite.getPosition().y + ((sprite.getTextureRect().height / 2) * scale) < workarea.height)
             {
                 velocity.y += gravity;
             }
             else
             {
             	velocity.y = 0;
-                sprite.setPosition(sprite.getPosition().x,GetSize::Bounds::workarea.height-(sprite.getTextureRect().height / 2));
+                sprite.setPosition(sprite.getPosition().x,workarea.height-((sprite.getTextureRect().height / 2) * scale));
                 if (status == wave || status == glued)
                 {
                     if (timer.getElapsedTime().asSeconds() > 3)
@@ -588,37 +648,55 @@ bool released;
 int main()
 {
 	
-	int FIXED_WIDTH = 1920;
-	int FIXED_HEIGHT = 1080;
+	SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED);
 	
 	
-	sf::VideoMode desktop = sf::VideoMode::getDesktopMode(); //Get fullSize
 	
-    
+	UserSettings::Get();
 	
 	
-	if(!GetSize::Init())
+	
+	DPI = GetDPI();
+	getWorkArea();
+	
+	
+	int FIXED_WIDTH,FIXED_HEIGHT;
+	FIXED_WIDTH = workarea.width;
+	FIXED_HEIGHT = workarea.height;
+	
+	for(float a=2;a<20;a++)
 	{
-		MessageBox(NULL,"Failed to find DPI! \nQuitting...","Failed",MB_OK);
-		return 0;
-	}	
-
-
+		if(workarea.width/a < 1000 || workarea.height/a < 1000)
+		{
+			break;
+		}
+		FIXED_WIDTH = workarea.width/a;
+		FIXED_HEIGHT = workarea.height/a;
+	}
+	
+	
+	
+	
+	
+	std::cout << "fixedsize = "<< FIXED_WIDTH << "," << FIXED_HEIGHT << "\n";
+	
+	std::cout << "workarea = "<< workarea.width << "," << workarea.height << "\n";
+	
+	std::cout << "DPI: "<<DPI << "\n";
+	
+	
     View view;
-    view.reset(sf::FloatRect(0,0,FIXED_WIDTH,FIXED_HEIGHT));// (/1.3)
+    view.reset(sf::FloatRect(0,0,FIXED_WIDTH,FIXED_HEIGHT));
 
-	GetSize::Bounds::workarea = sf::IntRect(0,0,FIXED_WIDTH,FIXED_HEIGHT - (FIXED_HEIGHT * GetSize::Percent::taskbar.y));
 	
 	
-    RenderWindow mainwindow(VideoMode(desktop.width,desktop.height+1),"", Style::None);	
+    RenderWindow mainwindow(VideoMode(workarea.width * DPI,workarea.height * DPI),"", Style::None);	
     sf::WindowHandle handle = mainwindow.getSystemHandle();
 	mainwindow.setPosition(Vector2i(0, 0));
 	
-	
-	
 
     
-	ClearScreen::Init(FIXED_WIDTH,FIXED_HEIGHT,mainwindow,GetSize::Scaled::workarea.width,GetSize::Scaled::workarea.height);
+	ClearScreen::Init(UserSettings::modern,FIXED_WIDTH,FIXED_HEIGHT,mainwindow,workarea.width * DPI,workarea.height * DPI);
 	
 	
 	
@@ -642,28 +720,24 @@ int main()
     {
 
 
-
-
-
-		if(VideoMode::getDesktopMode().height!=desktop.height)
+		static sf::IntRect lastworkarea;
+		getWorkArea();
+		
+		if(GetDPI()!=DPI || workarea != lastworkarea)
 		{
 			
-			mainwindow.setSize(Vector2u(VideoMode::getDesktopMode().width,VideoMode::getDesktopMode().height+1));
+			DPI = GetDPI();
+			getWorkArea();
 			
-			if(!GetSize::Init())
-			{
-				MessageBox(NULL,"Failed to find DPI! \nQuitting...","Failed",MB_OK);
-				return 0;				
-			}
+			mainwindow.setSize(Vector2u(workarea.width * DPI,workarea.height * DPI));
+			
 	
-			GetSize::Bounds::workarea = sf::IntRect(0,0,FIXED_WIDTH,FIXED_HEIGHT - (FIXED_HEIGHT * GetSize::Percent::taskbar.y));
+			lastworkarea = workarea;
 			
 			
-			
-			desktop = VideoMode::getDesktopMode();
 			
 			//Clearscreen size needs to be re-updated so that it won't be cut off.
-			ClearScreen::Init(FIXED_WIDTH,FIXED_HEIGHT,mainwindow,GetSize::Scaled::workarea.width,GetSize::Scaled::workarea.height);
+			ClearScreen::Init(UserSettings::modern,FIXED_WIDTH,FIXED_HEIGHT,mainwindow,workarea.width * DPI,workarea.height * DPI);
 				
 		}
 
@@ -672,7 +746,13 @@ int main()
     		SetWindowPos(handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 		
-		MPosition = mainwindow.mapPixelToCoords(Mouse::getPosition(mainwindow));
+		sf::Vector2i MPositioni = Mouse::getPosition();
+		
+		float percentX = float(MPositioni.x)/float(workarea.width * DPI);
+		float percentY = float(MPositioni.y)/float(workarea.height * DPI);
+		
+		MPosition.x = FIXED_WIDTH * percentX;
+		MPosition.y = FIXED_HEIGHT * percentY;
 		
 		
 		
@@ -780,8 +860,8 @@ int main()
 	                for (int a = 0; a < 50; a++)
 	                {
 	                    Blupi newblupi;
-	                    int x = rand() % GetSize::Bounds::workarea.width;
-	                    int y = rand() % GetSize::Bounds::workarea.height;
+	                    int x = rand() % workarea.width;
+	                    int y = rand() % workarea.height;
 	
 	                    if (brush == "fly")
 	                    {
@@ -903,13 +983,11 @@ int main()
 
 	        if (Keyboard::isKeyPressed(Keyboard::LControl) || Keyboard::isKeyPressed(Keyboard::RControl))
 	        {
-	            if (Keyboard::isKeyPressed(Keyboard::LAlt) || Keyboard::isKeyPressed(Keyboard::RAlt))
-	            {
-	                if (Keyboard::isKeyPressed(Keyboard::Escape))
-	                {
-	                    mainwindow.close();
-	                }
-	            }
+                if (Keyboard::isKeyPressed(Keyboard::Escape))
+                {
+                    mainwindow.close();
+                }
+        
 	        }
 
 
@@ -1001,7 +1079,7 @@ int main()
 	
 	
 	
-	            if (blupi[a].sprite.getPosition().x < -(blupi[a].sprite.getTextureRect().width / 2) || blupi[a].sprite.getPosition().x > GetSize::Bounds::workarea.width + (blupi[a].sprite.getTextureRect().width / 2))
+	            if (blupi[a].sprite.getPosition().x < -(blupi[a].sprite.getTextureRect().width / 2) || blupi[a].sprite.getPosition().x > workarea.width + (blupi[a].sprite.getTextureRect().width / 2))
 	            {
 	                blupi.erase(blupi.begin() + a);
 	            }
@@ -1036,10 +1114,28 @@ int main()
 		}
 		
 		
+		
+		static bool uptodate = false;
+		
+		sf::Color clearColor = COLORMODE::GET(sf::Color::Transparent);
+		if(ClearScreen::modern)
+		{
+			clearColor = COLORMODE::GET(sf::Color(255,0,255));				
+		}
+		else
+		{
+			if(!uptodate)
+			{
+				COLORMODE::type = "BGRA";
+				textures.updateImages();
+				uptodate = true;
+			}
+		}
+			
 			
 		//draw
 		mainwindow.setView(view);
-    	mainwindow.clear(sf::Color(255,0,255));
+    	mainwindow.clear(clearColor);
     
         for (auto& b : blupi) {
             b.draw(mainwindow);
@@ -1050,7 +1146,8 @@ int main()
 		if(!ClearScreen::modern)
       	{
 			//draw again
-	    	ClearScreen::renderTexture.clear(sf::Color(255,0,255));
+			ClearScreen::renderTexture.setView(view);
+	    	ClearScreen::renderTexture.clear(clearColor);
 	    	
 	        for (auto& b : blupi) {
 	            b.draw(ClearScreen::renderTexture);
