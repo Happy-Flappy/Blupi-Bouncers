@@ -15,6 +15,9 @@ namespace UserSettings
 {
 	float BlupiScale = 1.3;
 	bool modern = false;
+	bool coverAll = true;
+	
+	
 	
 	void Get()
 	{

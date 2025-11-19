@@ -7,12 +7,12 @@ WINDRES  = windres.exe
 RES      = Blupi_Bouncers_private.res
 OBJ      = main.o $(RES)
 LINKOBJ  = main.o $(RES)
-LIBS     = -L"C:/mingw32/lib" -L"C:/mingw32/i686-w64-mingw32/lib" -L"C:/SFML-2.6.0/lib" -static-libgcc -static-libstdc++  -lsfml-graphics -lsfml-system -lsfml-window -lsfml-audio -lsfml-network -lgdi32
+LIBS     = -L"C:/mingw32/lib" -L"C:/mingw32/i686-w64-mingw32/lib" -L"C:/SFML-2.6.0/lib" -static-libgcc -static-libstdc++  -lsfml-graphics -lsfml-system -lsfml-window -lsfml-audio -lsfml-network -lgdi32 -luser32 -lmsimg32 -lkernel32 -lwinmm -lcomctl32 -lopengl32 -lglu32 -mwindows -lgdi32
 INCS     = -I"C:/mingw32/include" -I"C:/mingw32/i686-w64-mingw32/include" -I"C:/mingw32/lib/gcc/i686-w64-mingw32/13.1.0/include"
 CXXINCS  = -I"C:/mingw32/include" -I"C:/mingw32/i686-w64-mingw32/include" -I"C:/mingw32/lib/gcc/i686-w64-mingw32/13.1.0/include" -I"C:/SFML-2.6.0/include"
 BIN      = "Blupi Bouncers.exe"
-CXXFLAGS = $(CXXINCS) -std=c++17
-CFLAGS   = $(INCS) -std=c++17
+CXXFLAGS = $(CXXINCS) -std=c++20
+CFLAGS   = $(INCS) -std=c++20
 DEL      = C:\Program Files (x86)\Embarcadero\Dev-Cpp\DevCpp.exe INTERNAL_DEL
 
 .PHONY: all all-before all-after clean clean-custom

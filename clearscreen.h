@@ -14,36 +14,17 @@ namespace ClearScreen
 	HDC hdcMem = NULL;
 	HBITMAP hbmp = NULL;
 	void* pvBits = NULL;
-	int FIXED_WIDTH = 960;
-	int FIXED_HEIGHT = 540;
-	int SCALE_WIDTH = 1920;
-	int SCALE_HEIGHT = 1080;
+	int WIDTH,HEIGHT;
 	sf::RenderTexture renderTexture;
 	bool modern = false;
 	
-	void Init(bool isModern,int width,int height,sf::RenderWindow &window,int scaledX = 100000,int scaledY = 100000) 
+	void Init(bool isModern,sf::RenderWindow &window) 
 	{
 		
+		WIDTH = window.getSize().x;
+		HEIGHT = window.getSize().y;
+		
 		modern = isModern;
-		
-		//Set Sizes
-		FIXED_WIDTH = width;
-		FIXED_HEIGHT = height;
-		
-		
-    	sf::VideoMode desktop = sf::VideoMode::getDesktopMode();	
-	    
-		int screenWidth  = desktop.width;
-	    int screenHeight = desktop.height;		
-		
-		if(scaledX > screenWidth)
-			scaledX = screenWidth;
-		if(scaledY > screenHeight - 1)
-			scaledX = screenHeight - 1;
-		
-		SCALE_WIDTH = scaledX;
-		SCALE_HEIGHT = scaledY;//Scaled size always has to be smaller than screen. If larger it will force color without transparency.
-		
 		
 		
 		//Get Window Handle
@@ -60,18 +41,14 @@ namespace ClearScreen
 		}
 		//else	
 				
-//	    // Setup Environment for the less efficient but effective method that is supported by windows 2000 and up.
-//	    hdcMem = CreateCompatibleDC(NULL);
-//	    BITMAPINFO bmi = { {sizeof(BITMAPINFOHEADER), FIXED_WIDTH, -FIXED_HEIGHT, 1, 32, BI_RGB} };
-//	    hbmp = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, &pvBits, NULL, 0);
-//	    SelectObject(hdcMem, hbmp);
-	    renderTexture.create(FIXED_WIDTH,FIXED_HEIGHT);
+
+	    renderTexture.create(WIDTH,HEIGHT);
 
         // Create DIB section with exact 32-bit ARGB format
         BITMAPINFO bmi = {0};
         bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-        bmi.bmiHeader.biWidth = FIXED_WIDTH;
-        bmi.bmiHeader.biHeight = -FIXED_HEIGHT;  // Top-down
+        bmi.bmiHeader.biWidth = WIDTH;
+        bmi.bmiHeader.biHeight = -HEIGHT;  // Top-down
         bmi.bmiHeader.biPlanes = 1;
         bmi.bmiHeader.biBitCount = 32;
         bmi.bmiHeader.biCompression = BI_RGB;
@@ -81,7 +58,7 @@ namespace ClearScreen
         SelectObject(hdcMem, hbmp);
         
         // Initialize bitmap with full transparency
-        std::memset(pvBits, 0, FIXED_WIDTH * FIXED_HEIGHT * 4);
+        std::memset(pvBits, 0, WIDTH * HEIGHT * 4);
 	    
 	}
 	
@@ -99,8 +76,9 @@ namespace ClearScreen
 
 
 		//COLOR CONVERSION IGNORED TO PROVIDE MASSIVE PERFORMANCE IMPROVEMENT
+		//COLOR CONVERSION OF TEXTURES HANDLED ONCE AT STARTUP.
 		// Copy pixel data directly to DIB section
-        std::memcpy(pvBits, src, FIXED_WIDTH * FIXED_HEIGHT * 4);
+        std::memcpy(pvBits, src, WIDTH * HEIGHT * 4);
 	        
 
 
@@ -110,7 +88,7 @@ namespace ClearScreen
         RECT rect;
         GetWindowRect(hwnd, &rect);
         POINT ptDst = {rect.left, rect.top};
-        SIZE size = {FIXED_WIDTH, FIXED_HEIGHT};
+        SIZE size = {WIDTH, HEIGHT};
         POINT ptSrc = {0, 0};
         
         // Set up blend function for per-pixel alpha

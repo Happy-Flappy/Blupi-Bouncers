@@ -1,8 +1,3 @@
-GOALS<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|
-
-1:Fix bogus window size caused by non-legacy transparency method.
-
-2:Fix offset cursor position caused by DPI. 
 
 UPDATES<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|
 
@@ -13,9 +8,8 @@ UPDATES<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<|<
 
 3: Overall, more cleanliness and orderliness of code.
 
-4: Added user control "settings.txt" to change blupi's scale or switch transparency methods if first method fails. 
-	1 = Modern method
-	0 = Old method(more reliable but slower)
+4: Added Initial Setup Request Dialogs. Sets up transparency method, window z positioning, and individual blupi scale.
+
 5: Changed Exit Key Combo from Ctrl+Alt+Esc to simply Ctrl+Esc.
  
 6: Update sizes to account for mid-use changing of the global DPI:

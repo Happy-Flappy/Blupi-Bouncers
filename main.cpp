@@ -648,11 +648,64 @@ bool released;
 int main()
 {
 	
+	
+	
+	if(MessageBox(NULL,"Do you want to use legacy transparency? \n(Legacy transparency is compatible from windows 2000 up to windows 11)\n(Modern transparency is less compatible with older windows but more efficient)","Initial Setup:",MB_YESNO  | MB_ICONQUESTION) == IDYES)
+	{
+		UserSettings::modern = false;
+	}
+	else
+		UserSettings::modern = true;
+	
+	
+	if(MessageBox(NULL,"Do you want Blupi Bouncers to cover the entire screen?\n (Click NO to force Blupi Bouncers to stay behind other windows.)","Initial Setup:",MB_YESNO  | MB_ICONQUESTION) == IDYES)
+	{
+		UserSettings::coverAll = true;
+	}
+	else
+		UserSettings::coverAll = false;
+	
+	
+	
+	bool gettingBlupiScale = true;
+	
+	while(gettingBlupiScale)
+	{
+	
+	
+		std::string str = "Do you want the individual blupi scale to be larger than " + std::to_string(static_cast<float>(UserSettings::BlupiScale)) + "? \nClick yes to increase. \nClick no to decrease. \nClick cancel to confirm choice.";
+		
+		int result = MessageBox(
+	        NULL, 
+	        str.c_str(), 
+	        "Initial Setup:", 
+	        MB_YESNOCANCEL | MB_ICONQUESTION 
+	    );
+	
+	    switch (result) {
+	        case IDYES:
+	        	UserSettings::BlupiScale += 0.2;
+	            break;
+	        case IDNO:
+	            UserSettings::BlupiScale -= 0.2;
+	            break;
+	        case IDCANCEL:
+	        	gettingBlupiScale = false;
+	            break;
+	    }
+	    
+	    if(UserSettings::BlupiScale < 0)
+	    	UserSettings::BlupiScale = 0;
+	    
+	}
+	
+	
+	
+	
 	SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED);
 	
 	
 	
-	UserSettings::Get();
 	
 	
 	
@@ -660,25 +713,12 @@ int main()
 	getWorkArea();
 	
 	
-	int FIXED_WIDTH,FIXED_HEIGHT;
-	FIXED_WIDTH = workarea.width;
-	FIXED_HEIGHT = workarea.height;
-	
-	for(float a=2;a<20;a++)
-	{
-		if(workarea.width/a < 1000 || workarea.height/a < 1000)
-		{
-			break;
-		}
-		FIXED_WIDTH = workarea.width/a;
-		FIXED_HEIGHT = workarea.height/a;
-	}
 	
 	
 	
 	
 	
-	std::cout << "fixedsize = "<< FIXED_WIDTH << "," << FIXED_HEIGHT << "\n";
+	
 	
 	std::cout << "workarea = "<< workarea.width << "," << workarea.height << "\n";
 	
@@ -686,18 +726,18 @@ int main()
 	
 	
     View view;
-    view.reset(sf::FloatRect(0,0,FIXED_WIDTH,FIXED_HEIGHT));
-
+    view.reset(sf::FloatRect(0,0,workarea.width,workarea.height));
+    view.setViewport(sf::FloatRect(0, 0, 1, 1));
 	
 	
-    RenderWindow mainwindow(VideoMode(workarea.width * DPI,workarea.height * DPI),"", Style::None);	
+    RenderWindow mainwindow(VideoMode(workarea.width,workarea.height),"", Style::None);	
     sf::WindowHandle handle = mainwindow.getSystemHandle();
-	mainwindow.setPosition(Vector2i(0, 0));
+    mainwindow.setPosition(Vector2i(workarea.left, workarea.top));
 	
+	mainwindow.setView(view);
 
     
-	ClearScreen::Init(UserSettings::modern,FIXED_WIDTH,FIXED_HEIGHT,mainwindow,workarea.width * DPI,workarea.height * DPI);
-	
+	ClearScreen::Init(UserSettings::modern,mainwindow);
 	
 	
 	
@@ -729,7 +769,12 @@ int main()
 			DPI = GetDPI();
 			getWorkArea();
 			
-			mainwindow.setSize(Vector2u(workarea.width * DPI,workarea.height * DPI));
+	        mainwindow.setSize(Vector2u(workarea.width, workarea.height));
+	        mainwindow.setPosition(Vector2i(workarea.left, workarea.top));
+
+	        view.setSize(workarea.width, workarea.height);
+	        view.setCenter(workarea.width / 2, workarea.height / 2);
+	        mainwindow.setView(view);
 			
 	
 			lastworkarea = workarea;
@@ -737,26 +782,29 @@ int main()
 			
 			
 			//Clearscreen size needs to be re-updated so that it won't be cut off.
-			ClearScreen::Init(UserSettings::modern,FIXED_WIDTH,FIXED_HEIGHT,mainwindow,workarea.width * DPI,workarea.height * DPI);
+			ClearScreen::Init(UserSettings::modern,mainwindow);
 				
 		}
 
-
-		if(GetTopWindow(NULL)!=handle)
-    		SetWindowPos(handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-
-		
-		sf::Vector2i MPositioni = Mouse::getPosition();
-		
-		float percentX = float(MPositioni.x)/float(workarea.width * DPI);
-		float percentY = float(MPositioni.y)/float(workarea.height * DPI);
-		
-		MPosition.x = FIXED_WIDTH * percentX;
-		MPosition.y = FIXED_HEIGHT * percentY;
-		
-		
+		if(UserSettings::coverAll)
+		{
+			if(GetTopWindow(NULL)!=handle)
+	    		SetWindowPos(handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		}
+		else
+		{
+			SetWindowPos(handle, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		}
 		
 
+		
+
+		MPosition = mainwindow.mapPixelToCoords(sf::Mouse::getPosition(mainwindow));
+
+		
+		
+		
+		
      	if (RESETclock.getElapsedTime().asSeconds() > 50)
         {
             brush = "random";
@@ -952,11 +1000,15 @@ int main()
 	        }
 	        
 	        
-	        
+	        static bool warButton = false;
 			if (sf::Keyboard::isKeyPressed(Keyboard::Num9))
 			{
-				war=true;
+				if(!warButton)
+					war=!war;
+				warButton = true;
 			}
+			else
+				warButton = false;
 				
 
 	

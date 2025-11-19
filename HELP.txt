@@ -15,8 +15,9 @@ Number 3 = All clicks produce Tank-Driving Blupis for 50 seconds after activatio
 Number 4 = All clicks produce Bouncing Blupis for 50 seconds after activation.
 Number 0 = All clicks produce Random Blupi types.(default)
 
-Number 9 = Generates 50 Blupis of the selected type in random positions.
+Number 5 = Selects Red Enemy Blupi
+Number 6 = Selects Yellow Enemy Blupi
+Number 9 = Activates(de-activates) war mode
 
-
-
+Ctrl && + = Adds 50 blupis of selected type in random positions.
 
